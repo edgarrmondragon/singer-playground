@@ -31,9 +31,9 @@ and validate that the streams are merged and land in a single table in the targe
 ```shell
 $ python tap.py | python map.py | target-sqlite -c target_sqlite.json
 $ sqlite3 example.db -markdown "select * from orders"
-| __tenant |    id     | nested__a | nested__b |        __loaded_at         |
-|----------|-----------|-----------|-----------|----------------------------|
-| 123      | a93u01982 | 42        | 0         | 2021-06-25 23:18:27.880821 |
-| 123      | 0hi984h92 | 314       | 1         | 2021-06-25 23:18:27.880931 |
-| 456      | 1ijf98203 | 1513      | 0         | 2021-06-25 23:18:27.881026 |
+| __partition | id | nested__a | nested__b |        __loaded_at         |
+|-------------|----|-----------|-----------|----------------------------|
+| 123         | 1  | 42        | 0         | 2021-06-26 01:23:27.920824 |
+| 123         | 2  | 314       | 1         | 2021-06-26 01:23:27.921140 |
+| 456         | 1  | 1513      | 0         | 2021-06-26 01:23:27.921658 |
 ```
