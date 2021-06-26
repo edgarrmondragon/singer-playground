@@ -1,0 +1,4 @@
+{
+  "database": "example.db",
+  "batch_size": 50000
+}
