@@ -1,5 +1,19 @@
 # Merge streams
 
+- [Motivation](#Motivation)
+- [Instructions](#Instructions)
+
+## Motivation
+
+There are situations in multi-tenant architectures where the data schema is shared between a number of sources (databases, filesystem directories, etc.)
+but the tap discovery behavior results in separate streams. Rather that modifying the existing tap or writing a new tap from scratch, streams can be merged by applying the
+correct transformations to each Singer message type.
+
+Examples:
+
+- A MongoDB architecture where there is a database for each customer but collections have the same structure.
+- An S3 bucket with CSV files, where the files for each customer are under a different prefix, but the files have the same schemas.
+
 ## Instructions
 
 Create a virtual environment and install the python dependencies.
