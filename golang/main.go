@@ -76,10 +76,11 @@ func main() {
 		    "company_name": {
 			"type": "string"
 		    },
-		    "approved_at": {
+		    "published_at": {
 			"type": "string",
 			"format": "date-time"
 		    },
+
 		    "type": {
 			"type": "string"
 		    }
