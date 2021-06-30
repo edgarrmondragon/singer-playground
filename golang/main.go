@@ -23,67 +23,10 @@ type page struct {
 
 func main() {
 	streamName := "jobs"
-	schema := []byte(`
-	    {
-		"properties": {
-		    "id": {
-			"type": "integer"
-		    },
-		    "location": {
-			"type": "string"
-		    },
-
-		    "location_type": {
-			"type": "string"
-		    },
-		    "position": {
-			"type": "string"
-		    },
-		    "slug": {
-			"type": "string"
-		    },
-
-		    "status": {
-			"type": "string"
-		    },
-		    "tags": {
-			"type": "array",
-			"items": {
-			    "type": "string"
-			}
-		    },
-		    "application_url_or_email": {
-			"type": "string"
-		    },
-		    "category": {
-			"type": "string"
-		    },
-		    "company_logo_url": {
-			"type": ["string", "null"]
-		    },
-		    "company_slug": {
-			"type": "string"
-		    },
-		    "company_twitter": {
-			"type": ["string", "null"]
-		    },
-		    "description": {
-			"type": "string"
-		    },
-		    "company_name": {
-			"type": "string"
-		    },
-		    "published_at": {
-			"type": "string",
-			"format": "date-time"
-		    },
-
-		    "type": {
-			"type": "string"
-		    }
-		}
-	    }
-	`)
+	schema, err := ioutil.ReadFile("./job.json")
+	if err != nil {
+		fmt.Print(err)
+	}
 	schemaMessage := singer.NewSingerSchema(streamName, schema)
 	schemaMessage.KeyProperties = []string{"id"}
 
