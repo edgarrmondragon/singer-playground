@@ -1,0 +1,4 @@
+{
+  "database": "datajobs.db",
+  "batch_size": 50000
+}

@@ -1,4 +1,5 @@
 tap-data-jobs
+datajobs.db
 
 # Binaries for programs and plugins
 *.exe
