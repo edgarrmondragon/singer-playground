@@ -9,11 +9,6 @@ import (
 	"tap-data-jobs/singer"
 )
 
-type job struct {
-	ApplicationUrlOrEmail string `json:"application_url_or_email"`
-	ApprovedAt            string `json:"approved_at"`
-}
-
 type meta struct {
 	After string `json:"after"`
 }
@@ -25,6 +20,7 @@ type page struct {
 
 func main() {
 	schemaMessage := singer.NewSingerSchema()
+	schemaMessage.KeyProperties = []string{"id"}
 	schemaMessage.Stream = "jobs"
 	schemaMessage.Schema = []byte(`
 	    {
