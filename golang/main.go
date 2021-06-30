@@ -7,7 +7,10 @@ import (
 	"log"
 	"net/http"
 	"tap-data-jobs/singer"
+	"time"
 )
+
+const baseURL string = "https://api.datastackjobs.com"
 
 type meta struct {
 	After string `json:"after"`
@@ -19,10 +22,8 @@ type page struct {
 }
 
 func main() {
-	schemaMessage := singer.NewSingerSchema()
-	schemaMessage.KeyProperties = []string{"id"}
-	schemaMessage.Stream = "jobs"
-	schemaMessage.Schema = []byte(`
+	streamName := "jobs"
+	schema := []byte(`
 	    {
 		"properties": {
 		    "id": {
@@ -83,6 +84,8 @@ func main() {
 		}
 	    }
 	`)
+	schemaMessage := singer.NewSingerSchema(streamName, schema)
+	schemaMessage.KeyProperties = []string{"id"}
 
 	data, err := json.Marshal(schemaMessage)
 	if err != nil {
@@ -92,7 +95,7 @@ func main() {
 
 	var resp *http.Response
 	client := &http.Client{}
-	url := "https://api.datastackjobs.com/v1/jobs"
+	url := baseURL + "/v1/jobs"
 
 	for {
 		req, err := http.NewRequest("GET", url, nil)
@@ -102,6 +105,7 @@ func main() {
 
 		req.Header.Add("User-Agent", "tap-datastack-jobs/0.0.1")
 
+		extracted := time.Now()
 		resp, err = client.Do(req)
 		if err != nil {
 			fmt.Println("error:", err)
@@ -120,9 +124,8 @@ func main() {
 		}
 
 		for _, object := range page.Data {
-			recordMessage := singer.NewSingerRecord()
-			recordMessage.Stream = "jobs"
-			recordMessage.Record = object
+			recordMessage := singer.NewSingerRecord(streamName, object)
+			recordMessage.TimeExtracted = &extracted
 			data, err = json.Marshal(recordMessage)
 			if err != nil {
 				log.Fatal(err)
@@ -131,7 +134,7 @@ func main() {
 		}
 
 		if page.Meta.After != "" {
-			url = "https://api.datastackjobs.com/v1/jobs?page[after]=" + page.Meta.After
+			url = baseURL + "/v1/jobs?page[after]=" + page.Meta.After
 		} else {
 			break
 		}
