@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 )
 
+type Breadcrumb []string
+
 type Metadata struct {
 	Inclusion          string   `json:"inclusion"`
 	Selected           bool     `json:"selected"`
@@ -14,13 +16,13 @@ type Metadata struct {
 }
 
 type MetadataEntry struct {
-	Breadcrumb []string `json:"breadcrumb"`
-	Metadata   Metadata `json:"metadata"`
+	Breadcrumb Breadcrumb `json:"breadcrumb"`
+	Metadata   Metadata   `json:"metadata"`
 }
 
 type CatalogEntry struct {
 	Name           string          `json:"name"`
-	Schema         json.RawMessage `json:"schema"`
+	Schema         Schema          `json:"schema"`
 	StreamMetadata []MetadataEntry `json:"metadata"`
 }
 
@@ -65,7 +67,7 @@ func stringSlicesEqual(a, b []string) bool {
 	return true
 }
 
-func (entry CatalogEntry) FindMetadata(breadcrumb []string) MetadataEntry {
+func (entry CatalogEntry) FindMetadata(breadcrumb Breadcrumb) MetadataEntry {
 	for _, metadata := range entry.StreamMetadata {
 		if stringSlicesEqual(metadata.Breadcrumb, breadcrumb) {
 			return metadata
