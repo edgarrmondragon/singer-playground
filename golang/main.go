@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,6 +9,8 @@ import (
 	"os"
 	"tap-data-jobs/singer"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 const (
@@ -32,7 +33,12 @@ type singerStream struct {
 	Schema json.RawMessage
 }
 
-var streams []singerStream
+var (
+	streams []singerStream
+	rootCmd = &cobra.Command{
+		Use: "tap-data-jobs",
+	}
+)
 
 func readJSONFile(filename string) []byte {
 	data, err := ioutil.ReadFile(filename)
@@ -165,9 +171,13 @@ func main() {
 		Schema: readJSONFile("./job.json"),
 	})
 
-	flag.StringVar(&catalogFile, "p", "", "Specify catalog. Default is root")
-	flag.BoolVar(&discover, "d", false, "Run in discovery mode.")
-	flag.Parse()
+	rootCmd.PersistentFlags().StringVarP(&catalogFile, "catalog", "c", "", "Use a catalog")
+	rootCmd.PersistentFlags().BoolVarP(&discover, "discover", "d", false, "Discover catalog")
+
+	err := rootCmd.Execute()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if discover {
 		doDiscover()
