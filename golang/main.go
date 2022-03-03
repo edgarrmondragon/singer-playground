@@ -23,14 +23,14 @@ type meta struct {
 }
 
 type page struct {
-	Data []json.RawMessage `json:"data"`
-	Meta meta              `json:"meta"`
+	Data []map[string]interface{} `json:"data"`
+	Meta meta                     `json:"meta"`
 }
 
 type singerStream struct {
 	Name   string
 	Path   string
-	Schema json.RawMessage
+	Schema singer.Schema
 }
 
 var (
@@ -40,23 +40,13 @@ var (
 	}
 )
 
-func readJSONFile(filename string) []byte {
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		fmt.Println("error:", err)
-	}
-	return data
-}
-
 func (stream *singerStream) getCatalogEntry() singer.CatalogEntry {
 	metadata := make([]singer.MetadataEntry, 0)
 	metadata = append(
 		metadata,
 		singer.MetadataEntry{
-			Breadcrumb: []string{},
-			Metadata: singer.Metadata{
-				Selected: true,
-			},
+			Breadcrumb: singer.Breadcrumb{},
+			Metadata:   singer.Metadata{},
 		},
 	)
 	return singer.CatalogEntry{
@@ -144,7 +134,7 @@ func doSync(catalog singer.SingerCatalog) {
 	for _, stream := range streams {
 		entry := catalog.FindStream(stream.Name)
 		if entry.Name != "" {
-			stream_metadata := entry.FindMetadata([]string{})
+			stream_metadata := entry.FindMetadata(singer.Breadcrumb{})
 			if stream_metadata.Metadata.Selected {
 				fmt.Fprintf(os.Stderr, "Syncing '%s'\n", stream.Name)
 				schemaMessage := singer.NewSingerSchema(stream.Name, entry.Schema)
@@ -168,7 +158,7 @@ func main() {
 	streams = append(streams, singerStream{
 		Name:   "jobs",
 		Path:   "/v1/jobs",
-		Schema: readJSONFile("./job.json"),
+		Schema: singer.ReadSchemaFromFile("./job.json"),
 	})
 
 	rootCmd.PersistentFlags().StringVarP(&catalogFile, "catalog", "c", "", "Use a catalog")

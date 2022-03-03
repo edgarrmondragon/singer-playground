@@ -13,22 +13,24 @@ const (
 	RecordMessage string = "RECORD"
 )
 
+type Record map[string]interface{}
+
 type singerMessage struct {
 	Stream string `json:"stream"`
 	Type   string `json:"type"`
 }
 
 type singerSchema struct {
-	Schema             json.RawMessage `json:"schema"`
-	KeyProperties      []string        `json:"key_properties"`
-	BookmarkProperties []string        `json:"bookmark_properties"`
+	Schema             Schema   `json:"schema"`
+	KeyProperties      []string `json:"key_properties"`
+	BookmarkProperties []string `json:"bookmark_properties"`
 	singerMessage
 }
 
 type singerRecord struct {
 	singerMessage
-	Record        json.RawMessage `json:"record"`
-	TimeExtracted *time.Time      `json:"time_extracted"`
+	Record        Record     `json:"record"`
+	TimeExtracted *time.Time `json:"time_extracted"`
 }
 
 func PrintMessage(message interface{}) {
@@ -40,7 +42,7 @@ func PrintMessage(message interface{}) {
 	fmt.Fprintln(os.Stdout, string(data))
 }
 
-func NewSingerRecord(streamName string, record json.RawMessage) *singerRecord {
+func NewSingerRecord(streamName string, record Record) *singerRecord {
 	return &singerRecord{
 		Record:        record,
 		TimeExtracted: nil,
@@ -51,7 +53,7 @@ func NewSingerRecord(streamName string, record json.RawMessage) *singerRecord {
 	}
 }
 
-func NewSingerSchema(streamName string, schema json.RawMessage) *singerSchema {
+func NewSingerSchema(streamName string, schema Schema) *singerSchema {
 	return &singerSchema{
 		Schema:        schema,
 		KeyProperties: make([]string, 0),
